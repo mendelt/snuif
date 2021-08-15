@@ -1,6 +1,34 @@
 use rawsock::open_best_library;
 
+use structopt::StructOpt;
+
+#[derive(StructOpt, Debug)]
+#[structopt(name = "snuif")]
+enum Cli {
+    /// Capture and display raw packets
+    Raw {
+        /// The number of packets to capture
+        count: u64,
+    },
+    /// List the available interfaces
+    List,
+}
+
+impl Cli {
+    fn run(self) {
+        match self {
+            Cli::Raw { count } => raw(count),
+            Cli::List => todo!(),
+        }
+    }
+}
+
 fn main() {
+    let command = Cli::from_args();
+    command.run();
+}
+
+fn raw(count: u64) {
     println!("Opening packet capturing library");
     let lib = open_best_library().expect("Could not open any packet capturing library");
     println!("Library opened, version is {}", lib.version());
@@ -12,8 +40,8 @@ fn main() {
     println!("Interface opened, data link: {}", interf.data_link());
 
     //receive some packets.
-    println!("Receiving 5 packets:");
-    for _ in 0..5 {
+    println!("Receiving {} packets:", count);
+    for _ in 0..count {
         let packet = interf.receive().expect("Could not receive packet");
         println!("Received packet: {}", packet);
     }
