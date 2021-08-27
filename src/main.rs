@@ -1,3 +1,5 @@
+use std::ops::Deref;
+
 use rawsock::open_best_library;
 
 use structopt::StructOpt;
@@ -44,5 +46,44 @@ fn raw(count: u64) {
     for _ in 0..count {
         let packet = interf.receive().expect("Could not receive packet");
         println!("Received packet: {}", packet);
+
+        let _parser = EtherPacket::new(packet.deref());
     }
+}
+
+/// Parse ethernet packet
+struct EtherPacket<'a> {
+    packet: &'a [u8]
+}
+
+impl<'a> EtherPacket<'a> {
+    pub fn new(bytes: &'a [u8]) -> EtherPacket<'a> {
+        EtherPacket { packet: bytes }
+    }
+
+    pub fn source(&self) -> u64 {
+        todo!()
+    }
+
+    pub fn dest(&self) -> u64 {
+        todo!()
+    }
+
+    pub fn vlan(&self) -> Option<u8> {
+        todo!()
+    }
+
+    pub fn ethertype(&self) -> EtherType {
+        todo!()
+    }
+
+    pub fn payload(&self) -> &[u8] {
+        todo!()
+    }
+}
+
+pub enum EtherType {
+    IPv4,
+
+    Unknown,
 }
