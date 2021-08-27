@@ -47,7 +47,7 @@ fn raw(count: u64) {
         let packet = interf.receive().expect("Could not receive packet");
         println!("Received packet: {}", packet);
 
-        let _parser = EtherPacket::new(packet.deref());
+        let _parser = EthernetFrame::new(packet.deref());
     }
 }
 
@@ -57,8 +57,8 @@ struct EthernetFrame<'a> {
 }
 
 impl<'a> EthernetFrame<'a> {
-    pub fn new(bytes: &'a [u8]) -> EtherPacket<'a> {
-        EtherPacket { packet: bytes }
+    pub fn new(bytes: &'a [u8]) -> EthernetFrame<'a> {
+        EthernetFrame { packet: bytes }
     }
 
     pub fn source(&self) -> u64 {
@@ -90,7 +90,7 @@ impl Display for EthernetFrame<'_> {
 
 #[repr(u8)]
 pub enum EtherType {
-    IPv4 = ,
+    IPv4 = 0x0800,
 
     Unknown,
 }
