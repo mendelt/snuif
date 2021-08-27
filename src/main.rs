@@ -45,7 +45,7 @@ fn raw(count: u64) {
     println!("Receiving {} packets:", count);
     for _ in 0..count {
         let packet = interf.receive().expect("Could not receive packet");
-        println!("Received packet: {}", packet);
+        println!("{}", packet);
 
         let _parser = EthernetFrame::new(packet.deref());
     }
@@ -88,7 +88,7 @@ impl Display for EthernetFrame<'_> {
     }
 }
 
-#[repr(u8)]
+#[repr(u16)]
 pub enum EtherType {
     IPv4 = 0x0800,
 
