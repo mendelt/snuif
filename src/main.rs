@@ -1,4 +1,4 @@
-use std::ops::Deref;
+use std::{fmt::Display, ops::Deref};
 
 use rawsock::open_best_library;
 
@@ -52,11 +52,11 @@ fn raw(count: u64) {
 }
 
 /// Parse ethernet packet
-struct EtherPacket<'a> {
+struct EthernetFrame<'a> {
     packet: &'a [u8]
 }
 
-impl<'a> EtherPacket<'a> {
+impl<'a> EthernetFrame<'a> {
     pub fn new(bytes: &'a [u8]) -> EtherPacket<'a> {
         EtherPacket { packet: bytes }
     }
@@ -82,8 +82,16 @@ impl<'a> EtherPacket<'a> {
     }
 }
 
+impl Display for EthernetFrame<'_> {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(formatter, "")
+    }
+}
+
+#[repr(u8)]
 pub enum EtherType {
-    IPv4,
+    IPv4 = ,
 
     Unknown,
 }
+
