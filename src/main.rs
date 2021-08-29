@@ -1,7 +1,4 @@
-use std::{
-    fmt::{Display, LowerHex},
-    ops::Deref,
-};
+use std::{fmt::Display, ops::Deref};
 
 use rawsock::open_best_library;
 
@@ -61,6 +58,7 @@ fn raw(count: u64) {
 }
 
 /// Parse ethernet packet
+#[derive(Debug)]
 struct EthernetFrame<'a> {
     packet: &'a [u8],
 }
@@ -105,11 +103,13 @@ impl Display for EthernetFrame<'_> {
 
 fn fmt_slice(bytes: &[u8], formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     for byte in bytes {
-        LowerHex::fmt(byte, formatter)?;
+        write!(formatter, "{:02x}", byte)?;
+        // LowerHex::fmt(byte, formatter)?;
     }
     Ok(())
 }
 
+#[derive(Debug)]
 #[repr(u16)]
 pub enum EtherType {
     IPv4 = 0x0800,
