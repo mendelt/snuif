@@ -1,4 +1,7 @@
-use std::{fmt::Display, ops::Deref};
+use std::{
+    fmt::{Display, LowerHex},
+    ops::Deref,
+};
 
 use rawsock::open_best_library;
 
@@ -34,20 +37,26 @@ fn raw(count: u64) {
     println!("Opening packet capturing library");
     let lib = open_best_library().expect("Could not open any packet capturing library");
     println!("Library opened, version is {}", lib.version());
-    let interf_name = lib.all_interfaces()
-        .expect("Could not obtain interface list").first()
-        .expect("There are no available interfaces").name.clone();
+    let interf_name = lib
+        .all_interfaces()
+        .expect("Could not obtain interface list")
+        .first()
+        .expect("There are no available interfaces")
+        .name
+        .clone();
     println!("Opening the {} interface", &interf_name);
-    let mut interf = lib.open_interface(&interf_name).expect("Could not open network interface");
+    let mut interf = lib
+        .open_interface(&interf_name)
+        .expect("Could not open network interface");
     println!("Interface opened, data link: {}", interf.data_link());
 
     //receive some packets.
     println!("Receiving {} packets:", count);
     for _ in 0..count {
         let packet = interf.receive().expect("Could not receive packet");
-        println!("{}", packet);
 
-        let _parser = EthernetFrame::new(packet.deref());
+        let frame = EthernetFrame::new(packet.deref());
+        println!("{}", frame);
     }
 }
 
@@ -80,8 +89,25 @@ impl<'a> EthernetFrame<'a> {
 
 impl Display for EthernetFrame<'_> {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(formatter, "")
+        fmt_slice(self.dest(), formatter)?;
+        write!(formatter, " ")?;
+
+        fmt_slice(self.source(), formatter)?;
+        write!(formatter, " ")?;
+
+        fmt_slice(self.ethertype(), formatter)?;
+        write!(formatter, " ")?;
+
+        fmt_slice(self.payload(), formatter)?;
+        Ok(())
     }
+}
+
+fn fmt_slice(bytes: &[u8], formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    for byte in bytes {
+        LowerHex::fmt(byte, formatter)?;
+    }
+    Ok(())
 }
 
 #[repr(u16)]
@@ -90,4 +116,3 @@ pub enum EtherType {
 
     Unknown,
 }
-
