@@ -53,7 +53,7 @@ fn raw(count: u64) {
 
 /// Parse ethernet packet
 struct EthernetFrame<'a> {
-    packet: &'a [u8]
+    packet: &'a [u8],
 }
 
 impl<'a> EthernetFrame<'a> {
@@ -61,24 +61,20 @@ impl<'a> EthernetFrame<'a> {
         EthernetFrame { packet: bytes }
     }
 
-    pub fn source(&self) -> u64 {
-        todo!()
+    pub fn dest(&self) -> &'a [u8] {
+        &self.packet[..6]
     }
 
-    pub fn dest(&self) -> u64 {
-        todo!()
+    pub fn source(&self) -> &'a [u8] {
+        &self.packet[6..12]
     }
 
-    pub fn vlan(&self) -> Option<u8> {
-        todo!()
-    }
-
-    pub fn ethertype(&self) -> EtherType {
-        todo!()
+    pub fn ethertype(&self) -> &'a [u8] {
+        &self.packet[12..14]
     }
 
     pub fn payload(&self) -> &[u8] {
-        todo!()
+        &self.packet[14..]
     }
 }
 
